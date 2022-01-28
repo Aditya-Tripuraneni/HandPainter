@@ -1,40 +1,57 @@
 import cv2 as cv
 import mediapipe as mp
 import pygame
-import random
+import math
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_hands = mp.solutions.hands
 
 WIDTH, HEIGHT = 480, 480
+
 # COLOURS
 RED = (255, 0, 0)
-GREEN = (127, 255, 0)
-LIGHTBLUE = (152, 245, 255)
+VIOLET = (148, 0, 211)
+INDIGO = (75, 0, 130)
+BLUE = (0, 0, 255)
+GREEN = (0, 255, 0)
+YELLOW = (255, 255, 0)
+ORANGE = (255, 127, 0)
 
 pygame.init()
 
 window = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Drawing Board")
+
 run = True
 
 hands = mp_hands.Hands(max_num_hands=1, min_tracking_confidence=0.7)
 
 camera = cv.VideoCapture(0)
 
+rainbow = [VIOLET, INDIGO, BLUE, GREEN, YELLOW, ORANGE, RED]
 
-class Square:
-    def __init__(self, x, y, width, height, color):
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
-        self.color = color
 
-    def draw_square(self, window):
-        self.rect = pygame.draw.rect(window, self.color, (self.x, self.y, self.width, self.height))
 
+def generate_rainbow(rainbow):
+    it = iter(rainbow)
+    while True:
+        try:
+            yield next(it)
+        except StopIteration:
+            it = iter(rainbow)
+
+
+def convert_to_pixel_coordinates():
+    normalized_landmark = handlms.landmark[id]
+    pixel_coordinate = mp_drawing._normalized_to_pixel_coordinates(normalized_landmark.x,
+                                                                   normalized_landmark.y, width, height)
+
+    return pixel_coordinate
+
+
+gen_rainbow = generate_rainbow(rainbow)
+feed_coordinates = True
 
 while run:
     ret, frame = camera.read()
@@ -48,30 +65,39 @@ while run:
     if keys[pygame.K_q]:
         print("Quitting Paint Game!")
         run = False
+    if keys[pygame.K_b]:
+        print("Clearing board!")
+        window.fill((0, 0, 0))
 
     if results.multi_hand_landmarks:
         for handlms in results.multi_hand_landmarks:
             for id, lm in enumerate(handlms.landmark):
                 height, width, c = frame.shape
                 cx, cy = int(lm.x * width), int(lm.y * height)
-                print(height, height)
+                if id == 4:
+                    global thumb_coordinates
+                    cv.circle(frame, (cx, cy), 15, (255, 0, 0), cv.FILLED)
+                    thumb_coordinates = convert_to_pixel_coordinates()
+                    print(f"THUMB COORDINATES: {thumb_coordinates}")
                 if id == 8:
-                    print("INDEX FINGER FOUND")
-                    cv.circle(frame, (cx, cy), 25, (255, 0, 255), cv.FILLED)
-                    normalizedlandmark = handlms.landmark[id]
-                    pixelcoordiante = mp_drawing._normalized_to_pixel_coordinates(normalizedlandmark.x,
-                                                                                  normalizedlandmark.y, width, height)
+                    global index_coordinates
+                    cv.circle(frame, (cx, cy), 15, (255, 0, 255), cv.FILLED)
+                    index_coordinates = convert_to_pixel_coordinates()
+                    print(f"INDEX COORDINATES: {index_coordinates}")
 
-                    print(f"INDEX COORDINATES: {pixelcoordiante}")
-                    if pixelcoordiante[0] and pixelcoordiante[1] != None:
+                    x_distance = index_coordinates[0] - thumb_coordinates[0]
+                    y_distance = index_coordinates[1] - thumb_coordinates[1]
+                    distance = math.sqrt((x_distance ** 2) + (y_distance ** 2))
+                    print(f"DISTANCE {distance}")
 
-                        pygame.draw.rect(window,
-                                         (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)),
-                                         (pixelcoordiante[0], pixelcoordiante[1], 10, 10))
+                    try:
+
+                        pygame.draw.circle(window, next(gen_rainbow),
+                                           (index_coordinates[0], index_coordinates[1]), 5)
                         pygame.display.update()
-                    else:
+                    except TypeError:
                         run = False
-                        print("Out of bounds cannot draw!")
+                        print("Your index finger was out of bounds so program shutdown.")
 
                 mp_drawing.draw_landmarks(frame, handlms, mp_hands.HAND_CONNECTIONS)
 
@@ -80,4 +106,5 @@ while run:
 camera.release()
 cv.destroyAllWindows()
 pygame.quit()
+
 
