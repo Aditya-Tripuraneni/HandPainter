@@ -32,7 +32,6 @@ camera = cv.VideoCapture(0)
 rainbow = [VIOLET, INDIGO, BLUE, GREEN, YELLOW, ORANGE, RED]
 
 
-
 def generate_rainbow(rainbow):
     it = iter(rainbow)
     while True:
@@ -91,10 +90,13 @@ while run:
                     print(f"DISTANCE {distance}")
 
                     try:
+                        if 0 <= distance <= 20:
 
-                        pygame.draw.circle(window, next(gen_rainbow),
-                                           (index_coordinates[0], index_coordinates[1]), 5)
-                        pygame.display.update()
+                            pygame.draw.circle(window, next(gen_rainbow),
+                                               (index_coordinates[0], index_coordinates[1]), 5)
+                            pygame.display.update()
+                        else:
+                            print("Too far!")
                     except TypeError:
                         run = False
                         print("Your index finger was out of bounds so program shutdown.")
@@ -106,5 +108,3 @@ while run:
 camera.release()
 cv.destroyAllWindows()
 pygame.quit()
-
-
