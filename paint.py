@@ -18,6 +18,8 @@ GREEN = (0, 255, 0)
 YELLOW = (255, 255, 0)
 ORANGE = (255, 127, 0)
 
+color = RED
+
 pygame.init()
 
 window = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -50,7 +52,6 @@ def convert_to_pixel_coordinates():
 
 
 gen_rainbow = generate_rainbow(rainbow)
-feed_coordinates = True
 
 while run:
     ret, frame = camera.read()
@@ -62,11 +63,21 @@ while run:
             run = False
     keys = pygame.key.get_pressed()
     if keys[pygame.K_q]:
-        print("Quitting Paint Game!")
         run = False
-    if keys[pygame.K_b]:
-        print("Clearing board!")
+    if keys[pygame.K_c]:
         window.fill((0, 0, 0))
+    if keys[pygame.K_r]:
+        color = RED
+    if keys[pygame.K_b]:
+        color = BLUE
+    if keys[pygame.K_y]:
+        color = YELLOW
+    if keys[pygame.K_g]:
+        color = GREEN
+    if keys[pygame.K_o]:
+        color = ORANGE
+    if keys[pygame.K_l]:
+        color = next(gen_rainbow)
 
     if results.multi_hand_landmarks:
         for handlms in results.multi_hand_landmarks:
@@ -92,7 +103,7 @@ while run:
                     try:
                         if 0 <= distance <= 20:
 
-                            pygame.draw.circle(window, next(gen_rainbow),
+                            pygame.draw.circle(window, color,
                                                (index_coordinates[0], index_coordinates[1]), 5)
                             pygame.display.update()
                         else:
