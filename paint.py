@@ -65,7 +65,7 @@ while run:
     if keys[pygame.K_q]:
         run = False
     if keys[pygame.K_c]:
-        window.fill((0, 0, 0))
+        window.fill((255, 255, 255))
     if keys[pygame.K_r]:
         color = RED
     if keys[pygame.K_b]:
