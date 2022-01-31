@@ -17,21 +17,22 @@ BLUE = (0, 0, 255)
 GREEN = (0, 255, 0)
 YELLOW = (255, 255, 0)
 ORANGE = (255, 127, 0)
+WHITE = (255, 255, 255)
+
 
 color = RED
+rainbow = [VIOLET, INDIGO, BLUE, GREEN, YELLOW, ORANGE, RED]
+
+run = True
 
 pygame.init()
 
 window = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Drawing Board")
 
-run = True
 
 hands = mp_hands.Hands(max_num_hands=1, min_tracking_confidence=0.7)
-
 camera = cv.VideoCapture(0)
-
-rainbow = [VIOLET, INDIGO, BLUE, GREEN, YELLOW, ORANGE, RED]
 
 
 def generate_rainbow(rainbow):
@@ -52,12 +53,14 @@ def convert_to_pixel_coordinates():
 
 
 gen_rainbow = generate_rainbow(rainbow)
-
+window.fill(WHITE)
 while run:
     ret, frame = camera.read()
     frame = cv.flip(frame, 1)
     imgRGB = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
     results = hands.process(imgRGB)
+    hand = results.multi_hand_landmarks
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
@@ -65,7 +68,7 @@ while run:
     if keys[pygame.K_q]:
         run = False
     if keys[pygame.K_c]:
-        window.fill((255, 255, 255))
+        window.fill(WHITE)
     if keys[pygame.K_r]:
         color = RED
     if keys[pygame.K_b]:
@@ -79,8 +82,8 @@ while run:
     if keys[pygame.K_l]:
         color = next(gen_rainbow)
 
-    if results.multi_hand_landmarks:
-        for handlms in results.multi_hand_landmarks:
+    if hand:
+        for handlms in hand:
             for id, lm in enumerate(handlms.landmark):
                 height, width, c = frame.shape
                 cx, cy = int(lm.x * width), int(lm.y * height)
@@ -88,32 +91,26 @@ while run:
                     global thumb_coordinates
                     cv.circle(frame, (cx, cy), 15, (255, 0, 0), cv.FILLED)
                     thumb_coordinates = convert_to_pixel_coordinates()
-                    print(f"THUMB COORDINATES: {thumb_coordinates}")
                 if id == 8:
                     global index_coordinates
                     cv.circle(frame, (cx, cy), 15, (255, 0, 255), cv.FILLED)
                     index_coordinates = convert_to_pixel_coordinates()
-                    print(f"INDEX COORDINATES: {index_coordinates}")
 
                     x_distance = index_coordinates[0] - thumb_coordinates[0]
                     y_distance = index_coordinates[1] - thumb_coordinates[1]
                     distance = math.sqrt((x_distance ** 2) + (y_distance ** 2))
-                    print(f"DISTANCE {distance}")
 
                     try:
                         if 0 <= distance <= 20:
-
                             pygame.draw.circle(window, color,
                                                (index_coordinates[0], index_coordinates[1]), 5)
                             pygame.display.update()
-                        else:
-                            print("Too far!")
+
                     except TypeError:
                         run = False
                         print("Your index finger was out of bounds so program shutdown.")
 
                 mp_drawing.draw_landmarks(frame, handlms, mp_hands.HAND_CONNECTIONS)
-
     cv.imshow("Window", frame)
 
 camera.release()
