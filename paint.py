@@ -7,7 +7,7 @@ mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_hands = mp.solutions.hands
 
-WIDTH, HEIGHT = 480, 480
+WIDTH, HEIGHT = 640, 480
 
 # COLOURS
 RED = (255, 0, 0)
@@ -19,7 +19,6 @@ YELLOW = (255, 255, 0)
 ORANGE = (255, 127, 0)
 WHITE = (255, 255, 255)
 
-
 color = RED
 rainbow = [VIOLET, INDIGO, BLUE, GREEN, YELLOW, ORANGE, RED]
 
@@ -30,7 +29,6 @@ pygame.init()
 window = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Drawing Board")
 
-
 hands = mp_hands.Hands(max_num_hands=1, min_tracking_confidence=0.7)
 camera = cv.VideoCapture(0)
 
@@ -38,10 +36,7 @@ camera = cv.VideoCapture(0)
 def generate_rainbow(rainbow):
     it = iter(rainbow)
     while True:
-        try:
-            yield next(it)
-        except StopIteration:
-            it = iter(rainbow)
+        yield next(it)
 
 
 def convert_to_pixel_coordinates():
@@ -53,6 +48,7 @@ def convert_to_pixel_coordinates():
 
 
 gen_rainbow = generate_rainbow(rainbow)
+
 window.fill(WHITE)
 while run:
     ret, frame = camera.read()
@@ -104,13 +100,13 @@ while run:
                         if 0 <= distance <= 20:
                             pygame.draw.circle(window, color,
                                                (index_coordinates[0], index_coordinates[1]), 5)
-                            pygame.display.update()
 
                     except TypeError:
                         run = False
                         print("Your index finger was out of bounds so program shutdown.")
 
                 mp_drawing.draw_landmarks(frame, handlms, mp_hands.HAND_CONNECTIONS)
+    pygame.display.update()
     cv.imshow("Window", frame)
 
 camera.release()
