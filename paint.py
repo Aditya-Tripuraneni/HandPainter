@@ -96,14 +96,14 @@ while run:
                     y_distance = index_coordinates[1] - thumb_coordinates[1]
                     distance = math.sqrt((x_distance ** 2) + (y_distance ** 2))
 
-                    try:
-                        if 0 <= distance <= 20:
-                            pygame.draw.circle(window, color,
+                    #try:
+                    if 0 <= distance <= 20:
+                        pygame.draw.circle(window, color,
                                                (index_coordinates[0], index_coordinates[1]), 5)
 
-                    except TypeError:
-                        run = False
-                        print("Your index finger was out of bounds so program shutdown.")
+                    #except TypeError:
+                        #run = False
+                        #print("Your index finger was out of bounds so program shutdown.")
 
                 mp_drawing.draw_landmarks(frame, handlms, mp_hands.HAND_CONNECTIONS)
     pygame.display.update()
