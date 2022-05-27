@@ -20,9 +20,11 @@ import pyautogui
 import os
 ````
 
-# What is this?
+## What is this?
 Use your thumb and index finger to draw onto your computer screen. By bringing your index and thumb finger together, it will allow you to draw onto a whiteboard, displayed on screen. Users can take screen shots of their work by moving their index finger together beside their middle finger tip. Within a certain distance screen shots will be taken aswell as drawing. 
 
+
+![visual](https://user-images.githubusercontent.com/59937191/170798233-c10752d2-6df0-4349-a9b5-fd96902c3489.png)
 
 
 ## Inspiration
@@ -36,4 +38,5 @@ Through this project I learned more details about Pygame, and open CV. Aswell as
 
 
  
+
 
