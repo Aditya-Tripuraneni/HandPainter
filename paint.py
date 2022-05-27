@@ -1,13 +1,10 @@
-import cv2 as cv
-import mediapipe as mp
+from cv2 import VideoCapture, flip, COLOR_BGR2RGB, cvtColor, circle, FILLED, destroyAllWindows, imshow
+import mediapipe.python.solutions.drawing_utils as mp_drawing
+import mediapipe.python.solutions.hands as mp_hands
 import pygame
 import math
 import pyautogui
 import os
-
-mp_drawing = mp.solutions.drawing_utils
-mp_drawing_styles = mp.solutions.drawing_styles
-mp_hands = mp.solutions.hands
 
 WIDTH, HEIGHT = 640, 480
 
@@ -35,7 +32,7 @@ window = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Drawing Board")
 
 hands = mp_hands.Hands(max_num_hands=1, min_tracking_confidence=0.9)
-camera = cv.VideoCapture(0)
+camera = VideoCapture(0)
 
 
 def generate_rainbow(rainbow):
@@ -52,18 +49,17 @@ def convert_to_pixel_coordinates():
     normalized_landmark = handlms.landmark[id]
     pixel_coordinate = mp_drawing._normalized_to_pixel_coordinates(normalized_landmark.x,
                                                                    normalized_landmark.y, width, height)
-
     return pixel_coordinate
 
 
-gen_rainbow = generate_rainbow(rainbow)
 
+gen_rainbow = generate_rainbow(rainbow)
 window.fill(WHITE)
 
 while run:
     ret, frame = camera.read()
-    frame = cv.flip(frame, 1)
-    imgRGB = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
+    frame = flip(frame, 1)
+    imgRGB = cvtColor(frame, COLOR_BGR2RGB)
     results = hands.process(imgRGB)
     hand = results.multi_hand_landmarks
 
@@ -93,40 +89,50 @@ while run:
             for id, lm in enumerate(handlms.landmark):
                 height, width, c = frame.shape
                 cx, cy = int(lm.x * width), int(lm.y * height)
+
                 if id == 4:
-                    cv.circle(frame, (cx, cy), 15, (255, 0, 0), cv.FILLED)
+                    circle(frame, (cx, cy), 15, (255, 0, 0), FILLED)
                     thumb_coordinates = convert_to_pixel_coordinates()
 
                 if id == 8:
-                    cv.circle(frame, (cx, cy), 15, (255, 0, 255), cv.FILLED)
+                    circle(frame, (cx, cy), 15, (255, 0, 255), FILLED)
                     index_coordinates = convert_to_pixel_coordinates()
 
-                    x_distance = index_coordinates[0] - thumb_coordinates[0]
-                    y_distance = index_coordinates[1] - thumb_coordinates[1]
-                    distance = math.sqrt((x_distance ** 2) + (y_distance ** 2))
+                    try:
+                        x_distance = index_coordinates[0] - thumb_coordinates[0]
+                        y_distance = index_coordinates[1] - thumb_coordinates[1]
+                        distance = math.sqrt((x_distance ** 2) + (y_distance ** 2))
 
-                    if 0 <= distance <= 20:
-                        pygame.draw.circle(window, color,
-                                           (index_coordinates[0], index_coordinates[1]), 5)
+                        if 0 <= distance <= 20:
+                            pygame.draw.circle(window, color,
+                                               (index_coordinates[0], index_coordinates[1]), 5)
+                    except TypeError:
+                        print("ERROR")
 
                 if id == 12:
-                    cv.circle(frame, (cx, cy), 15, (255, 255, 0), cv.FILLED)
+                    circle(frame, (cx, cy), 15, (255, 255, 0), FILLED)
                     middle_tip_coordinates = convert_to_pixel_coordinates()
 
-                    x_middle_distance = index_coordinates[0] - middle_tip_coordinates[0]
-                    y_middle_distance = index_coordinates[1] - middle_tip_coordinates[1]
-                    distance_middle_to_index = distance = math.sqrt((x_middle_distance ** 2) + (y_middle_distance ** 2))
+                    try:
 
-                    if 0 <= distance_middle_to_index <= 20:
-                        image = pyautogui.screenshot()
-                        image.save(desktop + f"/screenshot{ss_count}.png")
-                        ss_count += 1
+                        x_middle_distance = index_coordinates[0] - middle_tip_coordinates[0]
+                        y_middle_distance = index_coordinates[1] - middle_tip_coordinates[1]
+                        distance_middle_to_index = distance = math.sqrt((x_middle_distance ** 2) + (y_middle_distance ** 2))
+
+                        if 0 <= distance_middle_to_index <= 20:
+                            print(desktop)
+                            image = pyautogui.screenshot()
+                            image.save(desktop + f"/screenshot{ss_count}.png")
+                            ss_count += 1
+
+                    except TypeError:
+                        print("error")
 
                 mp_drawing.draw_landmarks(frame, handlms, mp_hands.HAND_CONNECTIONS)
 
     pygame.display.update()
-    cv.imshow("Window", frame)
+    imshow("Window", frame)
 
 camera.release()
-cv.destroyAllWindows()
+destroyAllWindows()
 pygame.quit()
