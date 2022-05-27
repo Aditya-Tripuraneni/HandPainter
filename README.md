@@ -1,6 +1,6 @@
 # HandPainter
 
-##Installation
+## Installation
 There are a few things to install when using this program!
 ````bash 
 pip install opencv-python
@@ -9,7 +9,7 @@ pip install pyautogui
 pip install mediapipe
 ````
 
-##Imports 
+## Imports 
 ````Python
 import cv2 as cv
 import mediapipe as mp
@@ -19,10 +19,10 @@ import pyautogui
 import os
 ````
 
-#What is this?
+# What is this?
 Use your thumb and index finger to draw onto your computer screen. By bringing your index and thumb finger together, it will allow you to draw onto a whiteboard, displayed on screen. Users can take screen shots of their work by moving their index finger together beside their middle finger tip. Within a certain distance screen shots will be taken aswell as drawing. 
 
-##Inspiration
+## Inspiration
 This project was made integrating computer vision and pygame!
 I first got this idea, after I worked on a similar project called "Catch me if you can". The goal of catch me if you can was to mov a 2d square around your screen, by controlling it through your hand. This was a very interesting project I developed with my cousin, that eventually lead me to take on this new one. After learning open CV, I decided to create an application, where users could draw onto their computer screen, if they didn't have a mouse. This would finally allow users to have precise drawings all without having to spend money on a stylus or mouse!
 
