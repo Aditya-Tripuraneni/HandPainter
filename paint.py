@@ -1,4 +1,4 @@
-from cv2 import VideoCapture, flip, COLOR_BGR2RGB, cvtColor, circle, FILLED, destroyAllWindows, imshow
+from cv2 import VideoCapture, flip, COLOR_BGR2RGB, cvtColor, circle, FILLED, destroyAllWindows, imshow, CAP_PROP_FRAME_WIDTH, CAP_PROP_FRAME_HEIGHT
 import mediapipe.python.solutions.drawing_utils as mp_drawing
 import mediapipe.python.solutions.hands as mp_hands
 import pygame
@@ -33,6 +33,8 @@ pygame.display.set_caption("Drawing Board")
 
 hands = mp_hands.Hands(max_num_hands=1, min_tracking_confidence=0.9)
 camera = VideoCapture(0)
+camera.set(CAP_PROP_FRAME_WIDTH, WIDTH)
+camera.set(CAP_PROP_FRAME_HEIGHT, HEIGHT)
 
 
 def generate_rainbow(rainbow):
