@@ -4,7 +4,7 @@ import mediapipe.python.solutions.hands as mp_hands
 import pygame
 import math
 import pyautogui
-import os
+import os 
 
 WIDTH, HEIGHT = 640, 480
 
@@ -19,9 +19,11 @@ ORANGE = (255, 127, 0)
 WHITE = (255, 255, 255)
 
 color = RED
+
 rainbow = [VIOLET, INDIGO, BLUE, GREEN, YELLOW, ORANGE, RED]
 
-desktop = os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop')
+desktop = os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop') 
+print(desktop)
 ss_count = 1
 
 run = True
@@ -45,6 +47,9 @@ def generate_rainbow(rainbow):
             yield next(it)
         except StopIteration:
             it = iter(rainbow)
+
+
+
 
 
 def convert_to_pixel_coordinates():
@@ -71,20 +76,23 @@ while run:
     keys = pygame.key.get_pressed()
     if keys[pygame.K_q]:
         run = False
-    if keys[pygame.K_c]:
+    elif keys[pygame.K_c]:
         window.fill(WHITE)
-    if keys[pygame.K_r]:
+    elif keys[pygame.K_r]:
         color = RED
-    if keys[pygame.K_b]:
+    elif keys[pygame.K_b]:
         color = BLUE
-    if keys[pygame.K_y]:
+    elif keys[pygame.K_y]:
         color = YELLOW
-    if keys[pygame.K_g]:
+    elif keys[pygame.K_g]:
         color = GREEN
-    if keys[pygame.K_o]:
+    elif keys[pygame.K_o]:
         color = ORANGE
-    if keys[pygame.K_l]:
+    elif keys[pygame.K_l]:
         color = next(gen_rainbow)
+    elif keys[pygame.K_e]:
+        color = WHITE
+        
 
     if hand:
         for handlms in hand:
@@ -124,7 +132,7 @@ while run:
                         if 0 <= distance_middle_to_index <= 20:
                             print(desktop)
                             image = pyautogui.screenshot()
-                            image.save(desktop + f"/screenshot{ss_count}.png")
+                            image.save(desktop + f'screenshot{ss_count}.png')
                             ss_count += 1
 
                     except TypeError:
