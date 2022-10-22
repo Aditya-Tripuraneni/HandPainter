@@ -1,10 +1,12 @@
-from cv2 import VideoCapture, flip, COLOR_BGR2RGB, cvtColor, circle, FILLED, destroyAllWindows, imshow, CAP_PROP_FRAME_WIDTH, CAP_PROP_FRAME_HEIGHT
+from mimetypes import init
+from cv2 import VideoCapture, flip, COLOR_BGR2RGB, FONT_HERSHEY_COMPLEX, putText, cvtColor, circle, FILLED, destroyAllWindows, imshow, CAP_PROP_FRAME_WIDTH, CAP_PROP_FRAME_HEIGHT
 import mediapipe.python.solutions.drawing_utils as mp_drawing
 import mediapipe.python.solutions.hands as mp_hands
 import pygame
 import math
 import pyautogui
 import os 
+import time
 
 WIDTH, HEIGHT = 640, 480
 
@@ -50,7 +52,7 @@ def generate_rainbow(rainbow):
 
 
 
-
+    
 
 def convert_to_pixel_coordinates():
     normalized_landmark = handlms.landmark[id]
@@ -63,12 +65,26 @@ def convert_to_pixel_coordinates():
 gen_rainbow = generate_rainbow(rainbow)
 window.fill(WHITE)
 
+# start_frame = 0
+# start_time = 0
+inital_time = 0 
+
 while run:
     ret, frame = camera.read()
     frame = flip(frame, 1)
     imgRGB = cvtColor(frame, COLOR_BGR2RGB)
     results = hands.process(imgRGB)
     hand = results.multi_hand_landmarks
+    
+    # delta_time = time.time() - start_time 
+    # fps = 1/delta_time
+    # start_time = time.time()
+
+    # putText(frame, "f FPS: {fps}", (5, 40), FONT_HERSHEY_COMPLEX, 1, GREEN)
+
+
+    
+    
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -117,7 +133,7 @@ while run:
                             pygame.draw.circle(window, color,
                                                (index_coordinates[0], index_coordinates[1]), 5)
                     except TypeError:
-                        print("ERROR")
+                        print("Your hand is out of bounds!")
 
                 if id == 12:
                     circle(frame, (cx, cy), 15, (255, 255, 0), FILLED)
@@ -130,13 +146,22 @@ while run:
                         distance_middle_to_index = distance = math.sqrt((x_middle_distance ** 2) + (y_middle_distance ** 2))
 
                         if 0 <= distance_middle_to_index <= 20:
-                            print(desktop)
-                            image = pyautogui.screenshot()
-                            image.save(desktop + f'screenshot{ss_count}.png')
-                            ss_count += 1
+                            
+                            print(f"CURRENT TIME {time.time()}")
+                            delta = time.time() - inital_time 
+                            
+                            if  delta >= 5: 
+                                print("DELTA IS GREATER THAN 5")
+                                image = pyautogui.screenshot()
+                                image.save(desktop + f'screenshot{ss_count}.png')
+                                print(desktop)
+                                ss_count += 1
+                                inital_time = time.time()
+                            
+                                print(f"Updated initial time to {inital_time}")
 
                     except TypeError:
-                        print("error")
+                        print("Error when taking screenshot or your hand is still out of bounds")
 
                 mp_drawing.draw_landmarks(frame, handlms, mp_hands.HAND_CONNECTIONS)
 
@@ -146,3 +171,4 @@ while run:
 camera.release()
 destroyAllWindows()
 pygame.quit()
+
