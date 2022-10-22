@@ -145,7 +145,7 @@ while run:
                         y_middle_distance = index_coordinates[1] - middle_tip_coordinates[1]
                         distance_middle_to_index = distance = math.sqrt((x_middle_distance ** 2) + (y_middle_distance ** 2))
 
-                        if 0 <= distance_middle_to_index <= 20:
+                        if 0 <= distance_middle_to_index <= 20: 
                             
                             print(f"CURRENT TIME {time.time()}")
                             delta = time.time() - inital_time 
